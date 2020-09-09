@@ -17,7 +17,7 @@ sealed trait XmlEntity {
 
   def indentStr: String = "  " * indent
 
-  override def toString: String = {
+  def prettyPrint: String = {
     this match {
       case TagElem(name, props, content) =>
         s"$indentStr<$name${formatProps(props)}>$content</$name>"
