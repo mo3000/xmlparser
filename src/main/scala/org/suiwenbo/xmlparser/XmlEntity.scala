@@ -17,14 +17,14 @@ sealed trait XmlEntity {
 
   def indentStr: String = "  " * indent
 
-  def prettyPrint: String = {
+  def pretty: String = {
     this match {
       case TagElem(name, props, content) =>
         s"$indentStr<$name${formatProps(props)}>$content</$name>"
       case Tags(name, props, children) =>
         s"$indentStr<$name${formatProps(props)}>\n" +
           children.map {
-            _.addIndent(indent).toString
+            _.addIndent(indent).pretty
           }.mkString("\n") +
           s"\n$indentStr</$name>"
       case CDATA(content) =>
