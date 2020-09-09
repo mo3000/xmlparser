@@ -1,5 +1,7 @@
-This is a toy xmlparser written in scala.
-usage:
+A toy xmlparser written in scala.
+====
+
+### usage:
 
 ```scala
 val parser = new Parser()
