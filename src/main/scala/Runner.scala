@@ -1,3 +1,0 @@
-object Runner extends App {
-
-}
