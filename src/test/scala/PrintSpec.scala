@@ -19,7 +19,7 @@ class PrintSpec extends AnyFlatSpec {
       "<div>yoyo</div>",
       "<div id=\"3\" data-index=\"0\">nihao</div>",
       "<div>\n  <p>p1 content</p>\n  <p>p2 content</p>\n  <div>\n    <p>p11 content</p>\n  </div>\n</div>"
-    ))(tests1.map(_.prettyPrint))
+    ))(tests1.map(_.pretty))
   }
 
   it should "parse" in {
