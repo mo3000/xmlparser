@@ -51,13 +51,30 @@ class Parser {
   private def xml(): XmlEntity = {
     skip()
     assert(currentChar == '<')
-    val (tagname, props) = matchTagBegin()
-    val result = xmlListOrString() match {
-      case Left(v) => Tags(tagname, props, v)
-      case Right(v) => TagElem(tagname, props, v)
+    val CDATA_BEGIN = "<![CDATA["
+    val CDATA_END = "]]>"
+    if (text.slice(pos, pos + CDATA_BEGIN.length).mkString == CDATA_BEGIN) {
+      //is a cdata section
+      pos += CDATA_BEGIN.length
+      val startAt = pos
+      while (text.slice(pos, pos + CDATA_END.length).mkString != CDATA_END) {
+        while (currentChar != ']' && pos < text.length) pos += 1
+      }
+      logIfError(pos < text.length, "cdata not closed")
+      val cdata = CDATA(text.slice(startAt, pos).mkString)
+      pos += CDATA_END.length
+      skip()
+      cdata
+    } else {
+      val (tagname, props) = matchTagBegin()
+      val result = xmlListOrString() match {
+        case Left(v) => Tags(tagname, props, v)
+        case Right(v) => TagElem(tagname, props, v)
+      }
+      matchTagClose(tagname)
+      result
     }
-    matchTagClose(tagname)
-    result
+
   }
 
   private def skip(): Unit = while (isSkipable) pos += 1
@@ -117,10 +134,11 @@ class Parser {
     pos += 1
     skip()
     val closename = fetchName()
-    logIfError(name == closename, s"xml tag doesn't match, tagname '$closename', surposed to be '$name'")
+    logIfError(name == closename, s"xml tag doesn't match, tagname '$closename', supposed to be '$name'")
     skip()
     logIfError(currentChar == '>', s"xml tag doesn't close tagname $name")
     pos += 1
+    skip()
   }
 
   private def logIfError(pred: Boolean, message: String): Unit =
@@ -132,12 +150,12 @@ class Parser {
     text.slice(startAt, pos).mkString
   }
 
-  private def isSkipable: Boolean = skips.contains(text(pos))
+  private def isSkipable: Boolean = pos < text.length && skips.contains(text(pos))
 
   def parseFile(s: String): XmlEntity = {
     val f = Source.fromFile(s)
     try {
-      parseString(f.toString)
+      parseString(f.getLines().mkString)
     } finally {
       f.close()
     }
