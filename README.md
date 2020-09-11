@@ -4,6 +4,8 @@ A toy xmlparser written in scala.
 - support tags recurtion
 - tag may contain one or more property
 - CDATA content
+- parser return an ast in "case class" form, it's printable
+, and can be put back to string(with indentation !) using "`result`.pretty"
 
 a posiable xml content like:
 

@@ -39,8 +39,10 @@ class PrintSpec extends AnyFlatSpec {
 
   it should "parse a complex example" in {
     val parser = new Parser()
-    parser.parseFile(getClass.getResource("/teacher.xml").getPath) match {
+    val xml = parser.parseFile(getClass.getResource("/teacher.xml").getPath)
+    xml match {
       case Tags("teacher", _, List(age, name, card, Tags("students", _, List(stu1, stu2, stu3)))) =>
     }
+    assert(xml.pretty.nonEmpty)
   }
 }
